@@ -14,7 +14,7 @@ const createPost = async (req, res) => {
   return res.json({
     status: 200,
     data: newPost,
-    message: "post created successfully",
+    message: "Post created successfully",
   });
 };
 
@@ -31,15 +31,53 @@ const fetchPosts = async (req, res) => {
         },
       },
     },
+
     orderBy: {
       id: "desc",
+    },
+
+    where: {
+      // comment_count: {
+      //   gt: 1,
+      // },
+
+      // title: {
+      //   startsWith: "T"
+      // }
+
+      // title: {
+      //   endsWith: "a"
+      // }
+
+      // title: {
+      //   equals: "Prisma",
+      // },
+
+      // OR: [
+      //   {
+      //     title: {
+      //       startsWith: "T",
+      //     },
+      //   },
+      //   {
+      //     title: {
+      //       endsWith: "a",
+      //     },
+      //   },
+      // ],
+
+      NOT: {
+        title: {
+          startsWith: "T",
+        },
+      },
     },
   });
 
   return res.json({
     status: 200,
     data: posts,
-    message: "posts fetched succesfully",
+    message: "Posts fetched succesfully",
   });
 };
 
@@ -114,10 +152,26 @@ const deletePost = async (req, res) => {
   return res.json({ status: 200, message: "Post deleted successfully" });
 };
 
+const searchPost = async (req, res) => {
+  const query = req.query.q;
+
+  const posts = await prisma.post.findMany({
+    where: {
+      description: {
+        // contains: query,
+        search: query,
+      },
+    },
+  });
+
+  res.json({ status: 200, data: posts, message: "Search post results" });
+};
+
 module.exports = {
   createPost,
   fetchPosts,
   fetchPost,
   updatePost,
   deletePost,
+  searchPost,
 };
