@@ -32,7 +32,28 @@ const createUser = async (req, res) => {
 };
 
 const fetchUsers = async (req, res) => {
-  const users = await prisma.user.findMany();
+  // const users = await prisma.user.findMany({
+  //   include: {
+  //     post: {
+  //       select: {
+  //         title: true,
+  //         comment_count: true,
+  //       },
+  //     },
+  //   },
+  // });
+
+  const users = await prisma.user.findMany({
+    select: {
+      id: true,
+      _count: {
+        select: {
+          post: true,
+          comment: true,
+        },
+      },
+    },
+  });
 
   return res.json({
     status: 200,
@@ -47,6 +68,9 @@ const fetchUser = async (req, res) => {
   const user = await prisma.user.findFirst({
     where: {
       id: Number(userId),
+    },
+    include: {
+      post: true,
     },
   });
 
